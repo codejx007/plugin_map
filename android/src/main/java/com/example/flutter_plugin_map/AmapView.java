@@ -77,7 +77,7 @@ public class AmapView implements PlatformView, MethodChannel.MethodCallHandler {
         myLocationStyle.strokeColor(Color.parseColor("#8052A3FF"));
         myLocationStyle.radiusFillColor(Color.parseColor("#3052A3FF"));
         myLocationStyle.showMyLocation(true);
-        myLocationStyle.myLocationIcon(BitmapDescriptorFactory.fromResource(R.drawable.gpsbiaozhudianguanli));
+//        myLocationStyle.myLocationIcon(BitmapDescriptorFactory.fromResource(R.drawable.gpsbiaozhudianguanli));
         myLocationStyle.myLocationType(MyLocationStyle.LOCATION_TYPE_LOCATE);
         aMap.setMyLocationStyle(myLocationStyle);
         aMap.setMyLocationEnabled(true);
@@ -99,8 +99,8 @@ public class AmapView implements PlatformView, MethodChannel.MethodCallHandler {
         markerOption.position(new LatLng((double) data.get("latitude"), (double) data.get("longitude")));
         markerOption.title((String) data.get("title"));
         markerOption.draggable(false);
-        markerOption.icon(BitmapDescriptorFactory.fromBitmap(BitmapFactory
-                .decodeResource(this.context.getResources(), R.drawable.icon_biaozhu)));
+//        markerOption.icon(BitmapDescriptorFactory.fromBitmap(BitmapFactory
+//                .decodeResource(this.context.getResources(), R.drawable.icon_biaozhu)));
         markerOption.setGps(true);
         aMap.addMarker(markerOption);
     }
