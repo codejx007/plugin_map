@@ -1,5 +1,6 @@
 
 import 'dart:async';
+import 'dart:io';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/services.dart';
@@ -24,11 +25,21 @@ class AmapView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return AndroidView(
-      viewType:"com.example.flutter_plugin_map/mapview",
-      creationParamsCodec: const StandardMessageCodec(),
-      creationParams: config.toMap(),
-    );
+    if (Platform.isAndroid) {
+      return AndroidView(
+        viewType:"com.example.flutter_plugin_map/mapview",
+        creationParamsCodec: const StandardMessageCodec(),
+        creationParams: config.toMap(),
+      );
+    } else if (Platform.isIOS) {
+      return UiKitView(
+        viewType:"AMapView",
+        creationParamsCodec: const StandardMessageCodec(),
+        creationParams: config.toMap(),
+      );
+    } else {
+      return Container();
+    }
   }
 
   Future<Future> addMarker(MarkerOption options) async {
