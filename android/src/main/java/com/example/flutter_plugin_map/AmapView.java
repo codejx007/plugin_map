@@ -1,4 +1,4 @@
-package com.example.flutter_plugin_map;
+package android.src.main.java.com.example.plugin_map;
 
 import android.content.Context;
 import android.graphics.BitmapFactory;

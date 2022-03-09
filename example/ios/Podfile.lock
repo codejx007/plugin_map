@@ -1,20 +1,30 @@
 PODS:
-  - AMap3DMap (9.1.0):
+  - Alamofire (4.9.1)
+  - AMap3DMap (9.0.0):
     - AMapFoundation (~> 1.6.9)
   - AMapFoundation (1.6.9)
+  - AMapSearch (8.1.0):
+    - AMapFoundation (~> 1.6.9)
   - Flutter (1.0.0)
   - flutter_plugin_map (0.0.1):
+    - Alamofire
     - AMap3DMap
+    - AMapSearch
     - Flutter
+    - SVProgressHUD
+  - SVProgressHUD (2.2.5)
 
 DEPENDENCIES:
   - Flutter (from `Flutter`)
   - flutter_plugin_map (from `.symlinks/plugins/flutter_plugin_map/ios`)
 
 SPEC REPOS:
-  https://github.com/CocoaPods/Specs.git:
+  trunk:
+    - Alamofire
     - AMap3DMap
     - AMapFoundation
+    - AMapSearch
+    - SVProgressHUD
 
 EXTERNAL SOURCES:
   Flutter:
@@ -23,11 +33,14 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/flutter_plugin_map/ios"
 
 SPEC CHECKSUMS:
-  AMap3DMap: a1ba024c96017912499330afdc3a7885acd083f8
+  Alamofire: 85e8a02c69d6020a0d734f6054870d7ecb75cf18
+  AMap3DMap: 189a20478751f9b91b830fbb565344b88d3ffebb
   AMapFoundation: 8d8ecbb0b2e9ce5487995360d26c885d94642bfd
+  AMapSearch: 5c1cc07429f04b9cc76438fcb2411c66fdbbb178
   Flutter: 50d75fe2f02b26cc09d224853bb45737f8b3214a
-  flutter_plugin_map: 26582801f6f19bf354b532232af626f5658cf162
+  flutter_plugin_map: 24c6d5957db3da101cbcafabeb08317625de2e00
+  SVProgressHUD: 1428aafac632c1f86f62aa4243ec12008d7a51d6
 
-PODFILE CHECKSUM: e2e4f8669d5d313f89fa034bfdb17f653beb637b
+PODFILE CHECKSUM: 12fdb4de1adc00cb74402327bc8cd9500627df49
 
 COCOAPODS: 1.11.2

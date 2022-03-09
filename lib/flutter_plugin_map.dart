@@ -50,13 +50,16 @@ class AmapView extends StatelessWidget {
 class AmapConfig {
   int interval;
   double zoomLevel;
+  List<MarkerOption>? options;
 
-  AmapConfig({this.interval = 1000, this.zoomLevel = 28.0});
+  AmapConfig({this.interval = 1000, this.zoomLevel = 28.0, this.options});
 
   Map toMap() {
     Map map = {};
     map['interval'] = interval;
     map['zoomLevel'] = zoomLevel;
+    map['options'] = options?.map((e) => e.toMap()).toList();
+   
     return map;
   }
 }

@@ -14,8 +14,12 @@ A new Flutter project.
   s.author           = { 'Your Company' => 'email@example.com' }
   s.source           = { :path => '.' }
   s.source_files = 'Classes/**/*'
+  s.private_header_files = 'Classes/BridgeHeader.h'
   s.dependency 'Flutter'
   s.dependency 'AMap3DMap'
+  s.dependency 'Alamofire'
+  s.dependency 'SVProgressHUD'
+  s.dependency 'AMapSearch'
   s.platform = :ios, '9.0'
 
   # Flutter.framework does not contain a i386 slice.
