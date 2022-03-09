@@ -7,8 +7,6 @@
 
 import Foundation
 import UIKit
-import SVProgressHUD
-import Alamofire
 
 public class AmapView: NSObject, FlutterPlatformView {
     var params: Dictionary<String, Any?>
@@ -107,9 +105,9 @@ extension AmapView {
     }
     
     private func dealSearchPotins() {
-        var row = markOptions.count / 8 + 1
+        let row = markOptions.count / 8 + 1
         for i in 0..<row {
-            var start = i + i * 7
+            let start = i + i * 7
             var end = start + 7
             if (end > markOptions.count) {
                 end = markOptions.count - 1
@@ -117,28 +115,37 @@ extension AmapView {
             
             let pointAnnotationStart = addAnnotationToMapView(markOptions[start])
             let pointAnnotationEnd = addAnnotationToMapView(markOptions[end])
-            
-            
+//
+//
             mapView.showAnnotations([pointAnnotationStart, pointAnnotationEnd], edgePadding: UIEdgeInsets(top: 70, left: 20, bottom: 80, right: 20), animated: true)
             
             // 发起路线规划
-//            routeSearchRequest(startCoordinate: pointAnnotationStart.coordinate, destinationCoordinate: pointAnnotationEnd.coordinate)
             
             let request = AMapDrivingRouteSearchRequest()
             request.origin = AMapGeoPoint.location(withLatitude: CGFloat(pointAnnotationStart.coordinate.latitude), longitude: CGFloat(pointAnnotationStart.coordinate.longitude))
             request.destination = AMapGeoPoint.location(withLatitude: CGFloat(pointAnnotationEnd.coordinate.latitude), longitude: CGFloat(pointAnnotationEnd.coordinate.longitude))
-//            request.waypoints = markOptions[start...end]
+            let wayStart = start + 1
+            let wayEnd = end - 1
+            if (wayStart < wayEnd) {
+                var arr = [AMapGeoPoint]()
+                for j in wayStart...wayEnd {
+                    arr.append(markOptions[j])
+                    let _ = addAnnotationToMapView(markOptions[j])
+                }
+                request.waypoints = arr
+            }
+            
             request.requireExtension = true
             
             search.aMapDrivingRouteSearch(request)
         }
     }
     
-    private func addAnnotationToMapView(_ markerOption: MarkOption) -> MAPointAnnotation {
+    private func addAnnotationToMapView(_ markerOption: AMapGeoPoint) -> MAPointAnnotation {
        
         let pointAnnotation = MAPointAnnotation()
         pointAnnotation.coordinate = CLLocationCoordinate2DMake(markerOption.latitude, markerOption.longitude);
-        pointAnnotation.title = markerOption.title
+        pointAnnotation.title = "markerOption.title"
         self.mapView.addAnnotation(pointAnnotation)
         return pointAnnotation
     }

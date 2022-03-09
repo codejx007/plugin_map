@@ -91,6 +91,8 @@ class _MyAppState extends State<MyApp> {
       config: AmapConfig(
           zoomLevel: 3,
           options: [MarkerOption(latitude: 39.91667, longitude: 116.41667, title: '起点'),
+            MarkerOption(latitude: 38.43, longitude: 115.83, title: "suning"),
+            MarkerOption(latitude: 38.00109, longitude: 115.55993, title: "suning"),
             MarkerOption(latitude: 34.50000, longitude: 121.43333, title: '终点'),
           ],
        ),
