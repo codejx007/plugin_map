@@ -74,12 +74,12 @@ extension AmapView {
         if (self.params["options"] == nil) {
             return
         }
-        let options = self.params["options"] as! [Dictionary<String, Any>]
-        if (options.count == 0) {
+        let options = self.params["options"] as? [Dictionary<String, Any>]
+        if (options == nil || options?.count == 0) {
             return
         }
         
-        for item in options {
+        for item in options! {
             let markOption = MarkerOption(title: item["title"] as! String, latitude: item["latitude"] as! Double, longitude: item["longitude"] as! Double)
             markOptions.append(markOption)
         }
