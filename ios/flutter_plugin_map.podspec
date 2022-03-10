@@ -15,6 +15,7 @@ A new Flutter project.
   s.source           = { :path => '.' }
   s.source_files = 'Classes/**/*'
   s.private_header_files = 'Classes/BridgeHeader.h'
+  s.resources = ['Assets/*']
   s.dependency 'Flutter'
   s.dependency 'AMap3DMap'
   s.dependency 'AMapSearch'

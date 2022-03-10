@@ -31,7 +31,7 @@ SPEC CHECKSUMS:
   AMapFoundation: 8d8ecbb0b2e9ce5487995360d26c885d94642bfd
   AMapSearch: 5c1cc07429f04b9cc76438fcb2411c66fdbbb178
   Flutter: 50d75fe2f02b26cc09d224853bb45737f8b3214a
-  flutter_plugin_map: 221bc72f51dc08fdf470c0a2ff2d04756249e251
+  flutter_plugin_map: 2f7510524fc43e80380096e5f44d86dd14fb4b0c
 
 PODFILE CHECKSUM: 12fdb4de1adc00cb74402327bc8cd9500627df49
 
