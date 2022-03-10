@@ -80,7 +80,10 @@ extension AmapView {
         }
         
         for item in options! {
-            let markOption = MarkerOption(title: item["title"] as! String, latitude: item["latitude"] as! Double, longitude: item["longitude"] as! Double)
+            guard let latitude = item["latitude"] as? Double, let longitude = item["longitude"] as? Double else {
+                continue
+            }
+            let markOption = MarkerOption(title: item["title"] as? String ?? "", latitude: latitude, longitude: longitude)
             markOptions.append(markOption)
         }
         dealSearchPotins()
@@ -147,7 +150,7 @@ extension AmapView : MAMapViewDelegate {
     public func mapView(_ mapView: MAMapView!, rendererFor overlay: MAOverlay!) -> MAOverlayRenderer! {
 
         let renderer: MAPolylineRenderer = MAPolylineRenderer(overlay: overlay)
-        renderer.lineWidth = params["lineWidth"] as! CGFloat;
+        renderer.lineWidth = params["lineWidth"] as? CGFloat ?? 8;
         renderer.strokeColor = UIColor.blue;
         renderer.lineJoinType = kMALineJoinRound;
         renderer.lineCapType = kMALineCapRound;
