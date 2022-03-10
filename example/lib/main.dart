@@ -90,10 +90,16 @@ class _MyAppState extends State<MyApp> {
     amapView =  AmapView(
       config: AmapConfig(
           zoomLevel: 3,
-          options: [MarkerOption(latitude: 39.91667, longitude: 116.41667, title: '起点'),
+          options: [MarkerOption(latitude: 39.91667, longitude: 116.41667, title: '装货地'),
             MarkerOption(latitude: 38.43, longitude: 115.83, title: "suning"),
             MarkerOption(latitude: 38.00109, longitude: 115.55993, title: "suning"),
-            MarkerOption(latitude: 34.50000, longitude: 121.43333, title: '终点'),
+            MarkerOption(latitude: 37.45, longitude: 116.37, title: "suning"),
+            MarkerOption(latitude: 37.03, longitude: 115.89, title: "suning"),
+            MarkerOption(latitude: 37.17, longitude: 116.43, title: "suning"),
+            MarkerOption(latitude: 36.93, longitude: 116.63, title: "suning"),
+            MarkerOption(latitude: 35.38, longitude: 116.20, title: "suning"),
+            MarkerOption(latitude: 34.26, longitude: 117.2, title: "suning"),
+            MarkerOption(latitude: 34.50000, longitude: 121.43333, title: '卸货地'),
           ],
        ),
     );

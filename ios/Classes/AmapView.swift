@@ -21,7 +21,8 @@ public class AmapView: NSObject, FlutterPlatformView {
     
     var polylines = [Any]()
 
-    var markOptions = [AMapGeoPoint]()
+    var markOptions = [MarkerOption]()
+    
         
     private var _view: UIView
         
@@ -67,24 +68,6 @@ public class AmapView: NSObject, FlutterPlatformView {
 
 }
 
-extension AmapView : MAMapViewDelegate {
-
-    public func mapViewRequireLocationAuth(_ locationManager: CLLocationManager) -> Void {
-        locationManager.requestAlwaysAuthorization()
-    }
-    
-    public func mapView(_ mapView: MAMapView!, rendererFor overlay: MAOverlay!) -> MAOverlayRenderer! {
-
-        let renderer: MAPolylineRenderer = MAPolylineRenderer(overlay: overlay)
-        renderer.lineWidth = 8;
-        renderer.strokeColor = UIColor.blue;
-        renderer.lineJoinType = kMALineJoinRound;
-        renderer.lineCapType = kMALineCapRound;
-        
-        return renderer
-    }
-
-}
 
 extension AmapView {
     public func requestLocation() {
@@ -97,9 +80,8 @@ extension AmapView {
         }
         
         for item in options {
-            let markOption = AMapGeoPoint.location(withLatitude: item["latitude"] as! Double, longitude: item["longitude"] as! Double)
-           
-            markOptions.append(markOption!)
+            let markOption = MarkerOption(title: item["title"] as! String, latitude: item["latitude"] as! Double, longitude: item["longitude"] as! Double)
+            markOptions.append(markOption)
         }
         dealSearchPotins()
     }
@@ -107,7 +89,7 @@ extension AmapView {
     private func dealSearchPotins() {
         let row = markOptions.count / 8 + 1
         for i in 0..<row {
-            let start = i + i * 7
+            let start = i * 7
             var end = start + 7
             if (end > markOptions.count) {
                 end = markOptions.count - 1
@@ -115,8 +97,7 @@ extension AmapView {
             
             let pointAnnotationStart = addAnnotationToMapView(markOptions[start])
             let pointAnnotationEnd = addAnnotationToMapView(markOptions[end])
-//
-//
+
             mapView.showAnnotations([pointAnnotationStart, pointAnnotationEnd], edgePadding: UIEdgeInsets(top: 70, left: 20, bottom: 80, right: 20), animated: true)
             
             // 发起路线规划
@@ -126,11 +107,16 @@ extension AmapView {
             request.destination = AMapGeoPoint.location(withLatitude: CGFloat(pointAnnotationEnd.coordinate.latitude), longitude: CGFloat(pointAnnotationEnd.coordinate.longitude))
             let wayStart = start + 1
             let wayEnd = end - 1
-            if (wayStart < wayEnd) {
+            // 途径点添加标注
+            if (wayStart <= wayEnd) {
                 var arr = [AMapGeoPoint]()
                 for j in wayStart...wayEnd {
-                    arr.append(markOptions[j])
-                    let _ = addAnnotationToMapView(markOptions[j])
+                    let markOption = markOptions[j]
+                    let markGeoPoint = AMapGeoPoint.location(withLatitude: markOption.latitude, longitude: markOption.longitude)
+                    if (markGeoPoint != nil) {
+                        arr.append(markGeoPoint!)
+                        let _ = addAnnotationToMapView(markOptions[j])
+                    }
                 }
                 request.waypoints = arr
             }
@@ -141,18 +127,75 @@ extension AmapView {
         }
     }
     
-    private func addAnnotationToMapView(_ markerOption: AMapGeoPoint) -> MAPointAnnotation {
+    private func addAnnotationToMapView(_ markerOption: MarkerOption) -> MAPointAnnotation {
        
         let pointAnnotation = MAPointAnnotation()
         pointAnnotation.coordinate = CLLocationCoordinate2DMake(markerOption.latitude, markerOption.longitude);
-        pointAnnotation.title = "markerOption.title"
+        pointAnnotation.title = markerOption.title
         self.mapView.addAnnotation(pointAnnotation)
         return pointAnnotation
     }
     
-//    private func routeSearchRequest(startCoordinate: CLLocationCoordinate2D, destinationCoordinate: CLLocationCoordinate2D) {
-//
-//    }
+}
+
+extension AmapView : MAMapViewDelegate {
+
+    public func mapViewRequireLocationAuth(_ locationManager: CLLocationManager) -> Void {
+        locationManager.requestAlwaysAuthorization()
+    }
+    
+    public func mapView(_ mapView: MAMapView!, rendererFor overlay: MAOverlay!) -> MAOverlayRenderer! {
+
+        let renderer: MAPolylineRenderer = MAPolylineRenderer(overlay: overlay)
+        renderer.lineWidth = params["lineWidth"] as! CGFloat;
+        renderer.strokeColor = UIColor.blue;
+        renderer.lineJoinType = kMALineJoinRound;
+        renderer.lineCapType = kMALineCapRound;
+        
+        return renderer
+    }
+    
+    public func mapView(_ mapView: MAMapView!, viewFor annotation: MAAnnotation!) -> MAAnnotationView! {
+        if (annotation.isKind(of: MAUserLocation.self)) {
+            let userReuseIndentifier = "userReuseIndentifier"
+            var userAnnotationView = mapView.dequeueReusableAnnotationView(withIdentifier: userReuseIndentifier)
+            if (userAnnotationView == nil) {
+                userAnnotationView = MAAnnotationView(annotation: annotation, reuseIdentifier: userReuseIndentifier)
+            }
+            userAnnotationView?.image = UIImage(named: "ico_map_local")
+            return userAnnotationView
+        }
+    
+        if (annotation.isKind(of: MAPointAnnotation.self)) {
+            let pointReuseIndentifier = "pointReuseIndentifier"
+            var annotationView = mapView.dequeueReusableAnnotationView(withIdentifier: pointReuseIndentifier)
+            if (annotationView == nil) {
+                annotationView = MAAnnotationView(annotation: annotation, reuseIdentifier: pointReuseIndentifier)
+            }
+            let showStartAndEndPotin = params["showStartAndEndIcon"] as! Bool
+            let showWayPoints = params["showWayPointsIcon"] as! Bool
+        
+            if (annotation.title == "装货地") {
+                if (showStartAndEndPotin) {
+                    annotationView!.centerOffset = CGPoint(x: 0, y: -20)
+                    annotationView!.image = UIImage(named: "ico_guiji_zhuang")
+                }
+                
+            } else if (annotation.title == "卸货地") {
+                if (showStartAndEndPotin) {
+                    annotationView!.centerOffset = CGPoint(x: 0, y: -20)
+                    annotationView!.image = UIImage(named: "ico_guiji_xie")
+                }
+            } else {
+                if (showWayPoints) {
+                    annotationView!.image = UIImage(named: "ico_guiji_truck")
+                }
+            }
+            return annotationView
+        }
+        return nil
+    }
+
 }
 
 extension AmapView : AMapSearchDelegate {
@@ -189,6 +232,12 @@ extension AmapView : AMapSearchDelegate {
         print("Error:\(String(describing: error))")
     }
     
+}
+
+public struct MarkerOption {
+    var title: String
+    var latitude: Double
+    var longitude: Double
 }
 
 

@@ -3,6 +3,7 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 class FlutterPluginMap {
@@ -50,15 +51,28 @@ class AmapView extends StatelessWidget {
 class AmapConfig {
   int interval;
   double zoomLevel;
-  List<MarkerOption>? options;
+  List<MarkerOption>? options;  // 位置
+  bool showStartAndEndIcon;  // 是否显示装货地，卸货地图标
+  bool showWayPointsIcon;    // 是否显示途经点图标
+  double lineWidth;          // 路径宽度
 
-  AmapConfig({this.interval = 1000, this.zoomLevel = 28.0, this.options});
+  AmapConfig({
+    this.interval = 1000,
+    this.zoomLevel = 28.0,
+    this.showStartAndEndIcon = true,
+    this.showWayPointsIcon = true,
+    this.lineWidth = 8,
+    this.options
+  });
 
   Map toMap() {
     Map map = {};
     map['interval'] = interval;
     map['zoomLevel'] = zoomLevel;
     map['options'] = options?.map((e) => e.toMap()).toList();
+    map['showStartAndEndIcon'] = showStartAndEndIcon;
+    map['showWayPointsIcon'] = showWayPointsIcon;
+    map['lineWidth'] = lineWidth;
    
     return map;
   }
