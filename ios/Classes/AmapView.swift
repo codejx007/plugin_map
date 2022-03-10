@@ -86,15 +86,15 @@ extension AmapView {
             let markOption = MarkerOption(title: item["title"] as? String ?? "", latitude: latitude, longitude: longitude)
             markOptions.append(markOption)
         }
-        dealSearchPotins()
+        dealSearchPoints()
     }
     
-    private func dealSearchPotins() {
+    private func dealSearchPoints() {
         let row = markOptions.count / 8 + 1
         for i in 0..<row {
             let start = i * 7
             var end = start + 7
-            if (end > markOptions.count) {
+            if (end > markOptions.count - 1) {
                 end = markOptions.count - 1
             }
             

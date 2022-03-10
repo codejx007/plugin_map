@@ -35,7 +35,8 @@ android {
 }
 
 dependencies {
-    implementation('com.amap.api:map2d:latest.integration')
+    implementation('com.amap.api:map3d:latest.integration')
+    implementation('com.amap.api:search:latest.integration')
+    implementation('com.amap.api:location:latest.integration')
 }
 
-// 7488eca70623fd461a8e31d5c96ddf1b

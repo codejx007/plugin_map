@@ -1,7 +1,8 @@
-package android.src.main.java.com.example.plugin_map;
+package com.example.flutter_plugin_map;
 
 import android.app.Activity;
 import android.content.Context;
+
 import java.util.Map;
 
 import io.flutter.plugin.common.BinaryMessenger;
