@@ -98,10 +98,12 @@ extension AmapView {
                 end = markOptions.count - 1
             }
             
-            let pointAnnotationStart = addAnnotationToMapView(markOptions[start])
-            let pointAnnotationEnd = addAnnotationToMapView(markOptions[end])
+            let pointAnnotationStart = MAPointAnnotation()
+            pointAnnotationStart.coordinate = CLLocationCoordinate2DMake(markOptions[start].latitude, markOptions[start].longitude)
 
-            mapView.showAnnotations([pointAnnotationStart, pointAnnotationEnd], edgePadding: UIEdgeInsets(top: 70, left: 20, bottom: 80, right: 20), animated: true)
+            let pointAnnotationEnd = MAPointAnnotation()
+            pointAnnotationEnd.coordinate = CLLocationCoordinate2DMake(markOptions[end].latitude, markOptions[end].longitude);
+
             
             // 发起路线规划
             
@@ -118,7 +120,7 @@ extension AmapView {
                     let markGeoPoint = AMapGeoPoint.location(withLatitude: markOption.latitude, longitude: markOption.longitude)
                     if (markGeoPoint != nil) {
                         arr.append(markGeoPoint!)
-                        let _ = addAnnotationToMapView(markOptions[j])
+//                        let _ = addAnnotationToMapView(markOptions[j])
                     }
                 }
                 request.waypoints = arr
@@ -128,6 +130,23 @@ extension AmapView {
             
             search.aMapDrivingRouteSearch(request)
         }
+        
+        let showStartAndEndPotin = params["showStartAndEndIcon"] as! Bool
+        let showWayPoints = params["showWayPointsIcon"] as! Bool
+        
+        var showAnnotations = [MAPointAnnotation]()
+        for k in 0..<markOptions.count {
+            if (k == 0 || k == markOptions.count - 1) {
+                if (showStartAndEndPotin) {
+                    showAnnotations.append(addAnnotationToMapView(markOptions[k]))
+                }
+            } else {
+                if (showWayPoints) {
+                    showAnnotations.append(addAnnotationToMapView(markOptions[k]))
+                }
+            }
+        }
+        mapView.showAnnotations(showAnnotations, edgePadding: UIEdgeInsets(top: 80, left: 80, bottom: 100, right: 20), animated: true)
     }
     
     private func addAnnotationToMapView(_ markerOption: MarkerOption) -> MAPointAnnotation {
@@ -165,7 +184,7 @@ extension AmapView : MAMapViewDelegate {
             if (userAnnotationView == nil) {
                 userAnnotationView = MAAnnotationView(annotation: annotation, reuseIdentifier: userReuseIndentifier)
             }
-            userAnnotationView?.image = UIImage(named: "ico_map_local")
+//            userAnnotationView?.image = UIImage(named: "ico_map_local")
             return userAnnotationView
         }
     
@@ -175,24 +194,19 @@ extension AmapView : MAMapViewDelegate {
             if (annotationView == nil) {
                 annotationView = MAAnnotationView(annotation: annotation, reuseIdentifier: pointReuseIndentifier)
             }
-            let showStartAndEndPotin = params["showStartAndEndIcon"] as! Bool
-            let showWayPoints = params["showWayPointsIcon"] as! Bool
+
         
             if (annotation.title == "装货地") {
-                if (showStartAndEndPotin) {
-                    annotationView!.centerOffset = CGPoint(x: 0, y: -20)
-                    annotationView!.image = UIImage(named: "ico_guiji_zhuang")
-                }
+                annotationView!.centerOffset = CGPoint(x: 0, y: -20)
+                annotationView!.image = UIImage(named: "ico_guiji_zhuang")
                 
             } else if (annotation.title == "卸货地") {
-                if (showStartAndEndPotin) {
-                    annotationView!.centerOffset = CGPoint(x: 0, y: -20)
-                    annotationView!.image = UIImage(named: "ico_guiji_xie")
-                }
+
+                annotationView!.centerOffset = CGPoint(x: 0, y: -20)
+                annotationView!.image = UIImage(named: "ico_guiji_xie")
+
             } else {
-                if (showWayPoints) {
-                    annotationView!.image = UIImage(named: "ico_guiji_truck")
-                }
+                annotationView!.image = UIImage(named: "ico_guiji_truck")
             }
             return annotationView
         }

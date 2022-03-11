@@ -31,7 +31,7 @@ public class FlutterPluginMapPlugin implements FlutterPlugin, MethodCallHandler,
     channel = new MethodChannel(flutterPluginBinding.getBinaryMessenger(), "flutter_plugin_map");
     channel.setMethodCallHandler(this);
 
-    messenger = flutterPluginBinding.getBinaryMessenger();;
+    messenger = flutterPluginBinding.getBinaryMessenger();
     platformViewRegistry = flutterPluginBinding.getPlatformViewRegistry();
   }
 

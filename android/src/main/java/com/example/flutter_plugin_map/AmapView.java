@@ -1,6 +1,7 @@
 package com.example.flutter_plugin_map;
 
 import android.content.Context;
+import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
@@ -13,6 +14,7 @@ import com.amap.api.maps.AMap;
 import com.amap.api.maps.CameraUpdateFactory;
 import com.amap.api.maps.LocationSource;
 import com.amap.api.maps.MapView;
+import com.amap.api.maps.model.BitmapDescriptorFactory;
 import com.amap.api.maps.model.LatLng;
 import com.amap.api.maps.model.LatLngBounds;
 import com.amap.api.maps.model.MarkerOptions;
@@ -78,7 +80,7 @@ public class AmapView implements PlatformView, MethodChannel.MethodCallHandler, 
         markerOptionsList = new LinkedList<>();
 
         createMap(context);
-        initMapOptions();
+//        initMapOptions();
         mapView.onResume();
         this.context = context;
         dealParams();
@@ -100,6 +102,7 @@ public class AmapView implements PlatformView, MethodChannel.MethodCallHandler, 
         dealSearchPoints();
     }
 
+    //  添加标注
     private void dealSearchPoints() {
         int row = markerOptionsList.size() / 8 + 1;
         for (int i = 0; i < row; i++) {
@@ -108,8 +111,6 @@ public class AmapView implements PlatformView, MethodChannel.MethodCallHandler, 
             if (end > markerOptionsList.size() - 1) {
                 end = markerOptionsList.size() - 1;
             }
-            addAnnotationToMapView(markerOptionsList.get(start));
-            addAnnotationToMapView(markerOptionsList.get(end));
 
             LatLonPoint startPoint = new LatLonPoint(markerOptionsList.get(start).latitude, markerOptionsList.get(start).longitude);
             LatLonPoint endPoint = new LatLonPoint(markerOptionsList.get(end).latitude, markerOptionsList.get(end).longitude);
@@ -120,17 +121,28 @@ public class AmapView implements PlatformView, MethodChannel.MethodCallHandler, 
             List<LatLonPoint> wayPointArr = new LinkedList<>();
 
             if (wayStart <= wayEnd) {
-                for (int j = wayStart; j < wayEnd; j++) {
+                for (int j = wayStart; j < wayEnd + 1; j++) {
                     MarkerOptionModel optionModel = markerOptionsList.get(j);
                     LatLonPoint point = new LatLonPoint(optionModel.latitude, optionModel.longitude);
                     wayPointArr.add(point);
-                    addAnnotationToMapView(optionModel);
                 }
 
             }
-            DriveRouteQuery driveRouteQuery = new DriveRouteQuery(fromAndTo, RouteSearch.DRIVING_SINGLE_DEFAULT, null, null, "");
+            DriveRouteQuery driveRouteQuery = new DriveRouteQuery(fromAndTo, RouteSearch.DRIVING_SINGLE_DEFAULT, wayPointArr, null, "");
 
             routeSearch.calculateDriveRouteAsyn(driveRouteQuery);
+        }
+
+        for (int i = 0; i < markerOptionsList.size(); i++) {
+            if (i == 0 || i == markerOptionsList.size() - 1) {
+                if ((boolean) initParams.get("showStartAndEndIcon")) {
+                    addAnnotationToMapView(markerOptionsList.get(i));
+                }
+            } else {
+                if ((boolean) initParams.get("showWayPointsIcon")) {
+                    addAnnotationToMapView(markerOptionsList.get(i));
+                }
+            }
         }
     }
 
@@ -140,6 +152,15 @@ public class AmapView implements PlatformView, MethodChannel.MethodCallHandler, 
         markerOption.title(markerOptionModel.title);
         markerOption.draggable(false);
         markerOption.setGps(true);
+        markerOption.icon(BitmapDescriptorFactory.fromBitmap(BitmapFactory
+                .decodeResource(this.context.getResources(), R.drawable.ico_guiji_truck)));
+        if (markerOptionModel.title.equals("装货地")) {
+            markerOption.icon(BitmapDescriptorFactory.fromBitmap(BitmapFactory
+                .decodeResource(this.context.getResources(), R.drawable.ico_guiji_zhuang)));
+        } else if (markerOptionModel.title.equals("卸货地")) {
+            markerOption.icon(BitmapDescriptorFactory.fromBitmap(BitmapFactory
+                    .decodeResource(this.context.getResources(), R.drawable.ico_guiji_xie)));
+        }
         aMap.addMarker(markerOption);
     }
 
@@ -169,7 +190,7 @@ public class AmapView implements PlatformView, MethodChannel.MethodCallHandler, 
         myLocationStyle.strokeColor(Color.parseColor("#8052A3FF"));
         myLocationStyle.radiusFillColor(Color.parseColor("#3052A3FF"));
         myLocationStyle.showMyLocation(true);
-//        myLocationStyle.myLocationIcon(BitmapDescriptorFactory.fromResource(R.drawable.gpsbiaozhudianguanli));
+        myLocationStyle.myLocationIcon(BitmapDescriptorFactory.fromResource(R.drawable.ico_map_local));
         myLocationStyle.myLocationType(MyLocationStyle.LOCATION_TYPE_LOCATE);
         aMap.setMyLocationStyle(myLocationStyle);
         aMap.setMyLocationEnabled(true);
@@ -177,24 +198,7 @@ public class AmapView implements PlatformView, MethodChannel.MethodCallHandler, 
 
     @Override
     public void onMethodCall(@NonNull MethodCall call, @NonNull MethodChannel.Result result) {
-        if (call.method.equals("addMarkers")) {
-            if (call.arguments != null) {
-                Map<String, Object> datas = (Map<String, Object>) call.arguments;
-                showMarker(datas);
-                result.success("suc");
-            }
-        }
-    }
 
-    private void showMarker(Map<String, Object> data) {
-        MarkerOptions markerOption = new MarkerOptions();
-        markerOption.position(new LatLng((double) data.get("latitude"), (double) data.get("longitude")));
-        markerOption.title((String) data.get("title"));
-        markerOption.draggable(false);
-//        markerOption.icon(BitmapDescriptorFactory.fromBitmap(BitmapFactory
-//                .decodeResource(this.context.getResources(), R.drawable.icon_biaozhu)));
-        markerOption.setGps(true);
-        aMap.addMarker(markerOption);
     }
 
     @Override
@@ -219,13 +223,14 @@ public class AmapView implements PlatformView, MethodChannel.MethodCallHandler, 
                         latLngs.add(new LatLng(mLatLonPoint.getLatitude(), mLatLonPoint.getLongitude()));
                     }
                 }
-                aMap.clear();
-                aMap.addPolyline(new PolylineOptions().addAll(latLngs).width(30).color(Color.BLUE));
+//                aMap.clear();
+                double width = (double) initParams.get("lineWidth");
+                aMap.addPolyline(new PolylineOptions().addAll(latLngs).width((float) width * 3).color(Color.BLUE));
 
                 //显示完整包含所有marker地图路线
                 LatLngBounds.Builder builder = new LatLngBounds.Builder();
                 for (int K = 0; K < latLngs.size(); K++) {
-                    builder.include(latLngs.get(i));
+                    builder.include(latLngs.get(K));
                 }
                 //显示全部marker,第二个参数是四周留空宽度
                 aMap.moveCamera(CameraUpdateFactory.newLatLngBounds(builder.build(),200));
